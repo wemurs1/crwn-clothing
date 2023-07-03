@@ -4,6 +4,7 @@ import logger from 'redux-logger';
 import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from "redux-persist";
 import { composeWithDevTools } from '@redux-devtools/extension'
+import thunk from "redux-thunk";
 
 const persistConfig = {
     key: 'root',
@@ -13,7 +14,7 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
-const middleWares = process.env.NODE_ENV === 'development' ? [logger] : []
+const middleWares = process.env.NODE_ENV === 'development' ? [logger, thunk] : [thunk]
 
 var composeEnhancer: any = null;
 
@@ -25,3 +26,7 @@ const composedEnhancers = composeEnhancer(applyMiddleware(...middleWares))
 export const store = createStore(persistedReducer, undefined, composedEnhancers)
 
 export const persistor = persistStore(store)
+
+export type RootState = ReturnType<typeof store.getState>
+
+export type AppDispatch = typeof store.dispatch
